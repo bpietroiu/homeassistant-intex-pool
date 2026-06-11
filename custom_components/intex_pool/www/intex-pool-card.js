@@ -5,6 +5,10 @@ const RANGES = {
   temp_c:            {min: 0,   max: 40,  lo: 0,   hi: 40,  label: "Temp",          unit: "°C"},
   battery_pct:       {min: 20,  max: 100, lo: 0,   hi: 100, label: "Battery",       unit: "%"},
 };
+// Default entity-id suffixes (from the sensor names) + the canonical order.
+const SUFFIX = {ph: "ph", orp_mv: "orp", free_chlorine_ppm: "free_chlorine",
+                temp_c: "temperature", battery_pct: "battery"};
+const KEYS = Object.keys(RANGES);
 
 class IntexPoolCard extends HTMLElement {
   setConfig(config) {
@@ -15,12 +19,16 @@ class IntexPoolCard extends HTMLElement {
   getCardSize() { return 4; }
 
   _byKey(key) {
-    return (this._config.entities || []).find((e) => e.endsWith("_" + key) || e.includes(key));
+    const ents = this._config.entities || [];
+    const suf = "_" + SUFFIX[key];
+    return ents.find((e) => e.endsWith(suf)) || ents[KEYS.indexOf(key)];
   }
   _state(key) {
     const id = this._byKey(key);
     const st = id && this._hass && this._hass.states[id];
-    return st ? parseFloat(st.state) : null;
+    if (!st || st.state === "unavailable" || st.state === "unknown") return null;
+    const n = parseFloat(st.state);
+    return Number.isNaN(n) ? null : n;
   }
   _color(key, v) {
     if (v === null || Number.isNaN(v)) return "var(--disabled-text-color)";
