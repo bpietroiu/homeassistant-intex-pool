@@ -7,6 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.typing import ConfigType
 
 from .api import IntexApi
 from .const import (CONF_COUNTRY, CONF_DEVICE_ID, CONF_GID, CONF_SCAN_INTERVAL,
@@ -36,6 +37,13 @@ async def _register_card(hass: HomeAssistant) -> None:
     from homeassistant.components.frontend import add_extra_js_url
     add_extra_js_url(hass, CARD_URL)
     hass.data[f"{DOMAIN}_card_registered"] = True
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the Lovelace card once at component load, so it is available even
+    if a config entry later fails to set up (e.g. cloud rate-limit)."""
+    await _register_card(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
