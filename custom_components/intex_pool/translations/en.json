@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Intex Pool",
+        "data": {"email": "Email", "password": "Password", "country_code": "Country code"}
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate Intex Pool",
+        "data": {"password": "Password"}
+      }
+    },
+    "error": {"invalid_auth": "Invalid email or password", "cannot_connect": "Cannot reach Intex/Tuya cloud"},
+    "abort": {"already_configured": "Account already configured", "reauth_successful": "Re-authentication successful"}
+  },
+  "options": {
+    "step": {"init": {"data": {"scan_interval": "Update interval (minutes)"}}}
+  }
+}

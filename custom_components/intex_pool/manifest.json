@@ -1,0 +1,12 @@
+{
+  "domain": "intex_pool",
+  "name": "Intex Pool",
+  "version": "0.1.0",
+  "documentation": "https://github.com/bpietroiu/homeassistant-intex-pool",
+  "issue_tracker": "https://github.com/bpietroiu/homeassistant-intex-pool/issues",
+  "codeowners": ["@bpietroiu"],
+  "config_flow": true,
+  "iot_class": "cloud_polling",
+  "integration_type": "device",
+  "requirements": []
+}
