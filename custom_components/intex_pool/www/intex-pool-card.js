@@ -30,12 +30,16 @@ class IntexPoolCard extends HTMLElement {
     const n = parseFloat(st.state);
     return Number.isNaN(n) ? null : n;
   }
-  _color(key, v) {
-    if (v === null || Number.isNaN(v)) return "var(--disabled-text-color)";
+  _status(key, v) {
+    if (v === null || Number.isNaN(v)) return "na";
     const r = RANGES[key];
-    if (v < r.lo || v > r.hi) return "var(--error-color)";
-    if (v < r.min || v > r.max) return "var(--warning-color)";
-    return "var(--success-color, #2e7d32)";
+    if (v < r.lo || v > r.hi) return "bad";
+    if (v < r.min || v > r.max) return "warn";
+    return "ok";
+  }
+  _color(status) {
+    return {bad: "var(--error-color)", warn: "var(--warning-color)",
+            ok: "var(--success-color, #2e7d32)", na: "var(--disabled-text-color)"}[status];
   }
   _verdict() {
     const bad = ["ph", "free_chlorine_ppm"].some((k) => {
@@ -51,10 +55,12 @@ class IntexPoolCard extends HTMLElement {
     const gauges = Object.keys(RANGES).map((k) => {
       const val = this._state(k);
       const r = RANGES[k];
+      const st = this._status(k, val);
       const txt = val === null ? "—" : val;
-      return `<div class="cell">
-          <div class="val" style="color:${this._color(k, val)}">${txt}<span class="u">${r.unit}</span></div>
-          <div class="lbl">${r.label}</div>
+      const flag = (st === "warn" || st === "bad") ? ' <span class="warn-ico">⚠</span>' : "";
+      return `<div class="cell cell--${st}" style="--c:${this._color(st)}">
+          <div class="val">${txt}<span class="u">${r.unit}</span></div>
+          <div class="lbl">${r.label}${flag}</div>
         </div>`;
     }).join("");
     const anyId = this._byKey("ph");
@@ -76,9 +82,14 @@ class IntexPoolCard extends HTMLElement {
         .ico{width:34px;height:34px;border-radius:8px}
         .ttl{font-size:1.3em;font-weight:500}
         .banner{color:#fff;padding:6px 16px;font-weight:600}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;padding:12px 16px}
-        .cell{text-align:center}
-        .val{font-size:1.6em;font-weight:600}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;padding:12px 16px}
+        .cell{text-align:center;padding:8px 6px;border-radius:10px;border:1px solid transparent;transition:background .2s}
+        .cell--warn,.cell--bad{border-color:var(--c);background:rgba(255,255,255,.04)}
+        @supports (background:color-mix(in srgb,red 10%,transparent)){
+          .cell--warn,.cell--bad{background:color-mix(in srgb,var(--c) 15%,transparent);border-color:color-mix(in srgb,var(--c) 50%,transparent)}
+        }
+        .val{font-size:1.6em;font-weight:600;color:var(--c)}
+        .warn-ico{font-size:.8em}
         .u{font-size:.5em;margin-left:2px;color:var(--secondary-text-color)}
         .lbl{font-size:.8em;color:var(--secondary-text-color)}
         .foot{padding:4px 16px 12px;font-size:.75em;color:var(--secondary-text-color)}
