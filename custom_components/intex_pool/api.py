@@ -106,7 +106,16 @@ class IntexApi:
         res = body.get("result")
         if isinstance(res, dict):
             if res.get("success") is False:
-                raise IntexAuthError(res.get("errorMsg") or res.get("errorCode") or "error")
+                code = (res.get("errorCode") or "").upper()
+                msg = res.get("errorMsg") or code or "error"
+                blob = f"{code} {msg}".upper()
+                # rate limiting / transient -> retry, not an auth failure
+                if any(k in blob for k in ("FREQUENT", "FREQUENCY", "LIMIT", "BUSY", "TIMEOUT")):
+                    raise IntexApiError(msg)
+                if any(k in blob for k in ("PASSWD", "PASSWORD", "ACCOUNT", "USER_NOT", "USERNAME")):
+                    raise IntexAuthError(msg)
+                # unknown -> treat as transient (safer than forcing the re-auth UI)
+                raise IntexApiError(msg)
             return res.get("result", res)
         return res
 

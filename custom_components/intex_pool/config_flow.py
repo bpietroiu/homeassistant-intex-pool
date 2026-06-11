@@ -44,7 +44,8 @@ class IntexPoolConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(
                     title=homes[0]["name"] if homes else "Intex Pool",
-                    data={**user_input, CONF_DEVICE_ID: device_id, CONF_GID: gid})
+                    data={**user_input, CONF_DEVICE_ID: device_id, CONF_GID: gid,
+                          "sid": api.sid, "ecode": api.ecode})
         return self.async_show_form(step_id="user", data_schema=USER_SCHEMA, errors=errors)
 
     @staticmethod

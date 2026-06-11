@@ -41,9 +41,12 @@ async def _register_card(hass: HomeAssistant) -> None:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await _register_card(hass)
     session = async_get_clientsession(hass)
-    api = IntexApi(session, entry.data[CONF_DEVICE_ID])
+    # Reuse the session captured at config time so setup doesn't log in again
+    # (Tuya rate-limits the login endpoint).
+    api = IntexApi(session, entry.data[CONF_DEVICE_ID],
+                   sid=entry.data.get("sid", ""), ecode=entry.data.get("ecode", ""))
     coordinator = IntexPoolCoordinator(
-        hass, api, gid=entry.data[CONF_GID],
+        hass, entry, api, gid=entry.data[CONF_GID],
         interval_min=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
         creds=(entry.data[CONF_EMAIL], entry.data[CONF_PASSWORD], entry.data[CONF_COUNTRY]))
     await coordinator.async_config_entry_first_refresh()
