@@ -26,6 +26,17 @@ Includes a custom Lovelace card.
 
 (Manual install: copy `custom_components/intex_pool` into your HA `config/custom_components/`.)
 
+### Password (plaintext or MD5)
+The **password** field accepts either your normal password **or** the lowercase **MD5 hash** of
+it, if you'd rather not store the plaintext in Home Assistant. The integration only ever sends
+`MD5(password)` to the cloud, so the hash is equivalent for login. To compute it:
+```bash
+python -c "import hashlib,getpass;print(hashlib.md5(getpass.getpass('password: ').encode()).hexdigest())"
+```
+Paste the resulting 32-character value into the password field. (Detection is automatic: any
+32-char lowercase-hex value is treated as an MD5; anything else is hashed for you. The only edge
+case is a real password that happens to be exactly 32 hex characters.)
+
 ### Country code
 The **country code** is the **international phone dialing code** of the country your Intex Link
 account uses (the same value Tuya/Smart Life uses) — it must match your account's region.

@@ -5,6 +5,7 @@
         "title": "Intex Pool",
         "data": {"email": "Email", "password": "Password", "country_code": "Country code"},
         "data_description": {
+          "password": "Your Intex Link password — or, for privacy, its lowercase 32-character MD5 hash (auto-detected; the cloud only ever receives the hash).",
           "country_code": "International phone dialing code of the country your Intex Link account uses — e.g. 1 (US/Canada), 44 (UK), 49 (Germany), 33 (France), 34 (Spain), 39 (Italy), 31 (Netherlands), 40 (Romania), 61 (Australia)."
         }
       },

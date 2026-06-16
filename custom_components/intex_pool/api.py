@@ -69,6 +69,17 @@ def decode_reading(dps: dict) -> dict:
     return out
 
 
+def _password_hash(password: str | None, password_md5: str | None) -> str:
+    """Return the lowercase MD5 the login expects. Accepts an explicit `password_md5`,
+    or a `password` that is either plaintext (hashed) or already a 32-hex MD5 (used as-is)."""
+    import re
+    if password_md5:
+        return password_md5.strip().lower()
+    if password and re.fullmatch(r"[0-9a-fA-F]{32}", password.strip()):
+        return password.strip().lower()
+    return hashlib.md5(password.encode()).hexdigest()
+
+
 class IntexApi:
     def __init__(self, session: aiohttp.ClientSession, device_id: str,
                  sid: str = "", ecode: str = ""):
@@ -121,10 +132,14 @@ class IntexApi:
 
     async def login(self, email: str, password: str | None = None, country_code: str = "40",
                     password_md5: str | None = None) -> dict:
-        """Two-step RSA login: fetch token+pubkey, RSA-encrypt MD5(password), then sign in."""
+        """Two-step RSA login: fetch token+pubkey, RSA-encrypt MD5(password), then sign in.
+
+        `password` may be the plaintext password or, for privacy, its lowercase 32-hex MD5
+        (auto-detected). `password_md5` forces the hashed form explicitly.
+        """
         from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
-        passwd_md5 = (password_md5 or hashlib.md5(password.encode()).hexdigest()).lower()
+        passwd_md5 = _password_hash(password, password_md5)
         tk = self._unwrap(await self.call(
             "smartlife.m.user.username.token.get", "2.0",
             post={"countryCode": country_code, "isUid": False, "username": email}))
