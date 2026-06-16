@@ -1,7 +1,7 @@
 {
   "domain": "intex_pool",
   "name": "Intex Pool",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "documentation": "https://github.com/bpietroiu/homeassistant-intex-pool",
   "issue_tracker": "https://github.com/bpietroiu/homeassistant-intex-pool/issues",
   "codeowners": ["@bpietroiu"],

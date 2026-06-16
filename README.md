@@ -22,9 +22,23 @@ Includes a custom Lovelace card.
 1. HACS → ⋮ → **Custom repositories** → add `https://github.com/bpietroiu/homeassistant-intex-pool`, category **Integration**.
 2. Install "Intex Pool", then restart Home Assistant.
 3. **Settings → Devices & Services → Add Integration → Intex Pool**.
-4. Enter your Intex Link **email**, **password**, and **country code** (e.g. `40` Romania, `1` US, `44` UK).
+4. Enter your Intex Link **email**, **password**, and **country code** (see below).
 
 (Manual install: copy `custom_components/intex_pool` into your HA `config/custom_components/`.)
+
+### Country code
+The **country code** is the **international phone dialing code** of the country your Intex Link
+account uses (the same value Tuya/Smart Life uses) — it must match your account's region.
+
+| Code | Country | | Code | Country |
+|---|---|---|---|---|
+| 1 | US / Canada | | 39 | Italy |
+| 44 | United Kingdom | | 34 | Spain |
+| 49 | Germany | | 31 | Netherlands |
+| 33 | France | | 40 | Romania |
+| 351 | Portugal | | 61 | Australia |
+
+For anything not listed, use your country's entry from any "country calling codes" (E.164) table.
 
 ## The card
 After install, add a card → **Intex Pool Card** (or via YAML):
